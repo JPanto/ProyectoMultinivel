@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -90,7 +91,6 @@ public class Control implements ActionListener {
      * Se registra el cliente
      */
     private void registrarCliente() {
-        String clientDocName = "Cliente";
         objC.setId(formC.getTxt_id().getText());
         objC.setNom(formC.getTxt_nom().getText());
         objC.setTel(formC.getTxt_tel().getText());
@@ -101,7 +101,7 @@ public class Control implements ActionListener {
                     "Se debe ingresar numero de Identificacion, Nombre y telefono por favor verifique nuevamente");
         } else {
             try {
-                this.conexion.escribirArchivo(this.objC.toString(), clientDocName);
+                this.conexion.escribirArchivo(this.objC.toString(), Conexion.clientDocName);
             } catch (IOException ex) {
                 Logger.getLogger(Control.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.print(" *** Error al Conectar *** " + ex.toString());
@@ -109,7 +109,9 @@ public class Control implements ActionListener {
                 System.out.print(" *** Error al Ingresar *** " + e.toString());
             }
             ListaC.add(objC);
-            formC.getTextArea().append(objC.toString() + "\n\n");
+            String datos[] = {this.objC.getId(), this.objC.getNom(), this.objC.getTel()};
+            DefaultTableModel tabla = (DefaultTableModel) this.formC.getClientTable().getModel();
+            tabla.addRow(datos);
             objC = new Persona();
             formC.getTxt_id().setText("");
             formC.getTxt_nom().setText("");
@@ -117,81 +119,160 @@ public class Control implements ActionListener {
         }
     }
 
+    /**
+     *
+     */
+    private void registrarAlquiler() {
+        String alquilerDocName = "Alquiler";
+        Fecha entrada = new Fecha();
+        Fecha salida = new Fecha();
+        Hora hora = new Hora();
+        entrada.setDd(formA.getjDateChooser1().getCalendar().get(Calendar.DAY_OF_MONTH));
+        entrada.setMm(formA.getjDateChooser1().getCalendar().get(Calendar.MONTH + 1));
+        entrada.setAaaa(formA.getjDateChooser1().getCalendar().get(Calendar.YEAR));
+
+        //Pasar a Modelo
+        salida.setDd(formA.getjDateChooser1().getCalendar().get(Calendar.DAY_OF_MONTH + (Integer.parseInt(formA.getTxt_dias().getText()))));
+        salida.setMm(formA.getjDateChooser1().getCalendar().get(Calendar.MONTH + 1));
+        salida.setAaaa(formA.getjDateChooser1().getCalendar().get(Calendar.YEAR));
+
+        hora.setHh(formA.getSpin_hour().getValue());
+        hora.setMm(formA.getSpin_min().getValue());
+        hora.setSs(formA.getSpin_seg().getValue());
+
+        objA = new Alquiler();
+        objA.setNo_recibo(Integer.parseInt(formA.getTxt_no().getText()));
+        objA.setDias(Integer.parseInt(formA.getTxt_dias().getText()));
+        objA.setFecha_e(entrada);
+        objA.setFecha_s(salida);
+        objA.setHora(hora);
+        objA.setCliente(ListaC.get(formA.getCmb_cliente().getSelectedIndex()));
+        objA.setListaM(ListaM);
+
+        try {
+            this.conexion.escribirArchivo(this.objA.toString(), alquilerDocName);
+        } catch (IOException ex) {
+            Logger.getLogger(Control.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.print(" *** Error al Conectar *** " + ex.toString());
+        } catch (Exception e) {
+            System.out.print(" *** Error al Ingresar *** " + e.toString());
+        }
+    }
+
+    private void showClientScreen() {
+        formC.setTitle("Registro Cliente");
+        formP.getDpn_escritorio().add(formC);
+        formM.dispose();
+        formA.dispose();
+        DefaultTableModel tabla = (DefaultTableModel) this.formC.getClientTable().getModel();
+        tabla.setRowCount(0);
+        ListaC = this.conexion.getClientsArray();
+        ListaC.forEach((acum) -> {
+            String datos[] = {acum.getId(), acum.getNom(), acum.getTel()};
+            tabla.addRow(datos);
+        });
+        formC.setVisible(true);
+    }
+
+    private void cleanClientUI() {
+
+    }
+
+    private void cleanAlquilerUI() {
+
+    }
+
+    /**
+     * Se añade por maquina seleccionada al arreglo final para alquiler
+     */
+    private void addMachine() {
+        int selectedIndex = formA.getCmb_maquinaria().getSelectedIndex();
+        Maquinaria temp = null;
+        if (formA.getRdb_general().isSelected()) {
+            temp = ListaG.get(selectedIndex);
+        } else if (formA.getRdb_pesada().isSelected()) {
+            temp = (ListaP.get(selectedIndex));
+        }
+        ListaM.add(temp);
+    }
+
+    private void registarMaquinaria() {
+        if (formM.getTxt_cant().getText().isEmpty()
+                || formM.getTxt_cod().getText().isEmpty()
+                || formM.getTxt_desc().getText().isEmpty()
+                || formM.getCmb_tipo().getSelectedItem().equals("")) {
+            JOptionPane.showMessageDialog(null, "Se deben ingresar o seleccionar todos los campos, por favor verifique nuevamente");
+        } else {
+            if (formM.getCmb_tipo().getSelectedIndex() == 0) {
+                try {
+                    Pesada temp = new Pesada(formM.getTxt_cod().getText(),
+                            formM.getCmb_tipo().getSelectedItem().toString(),
+                            formM.getTxt_desc().getText(),
+                            Integer.parseInt(formM.getTxt_cant().getText()));
+                    ListaP.add(temp);
+                    this.conexion.escribirArchivo(temp.toString(), Conexion.machineDocName);
+                } catch (IOException ex) {
+                    Logger.getLogger(Control.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else if (formM.getCmb_tipo().getSelectedIndex() == 1) {
+                try {
+                    General temp = new General(formM.getTxt_cod().getText(),
+                            formM.getCmb_tipo().getSelectedItem().toString(),
+                            formM.getTxt_desc().getText(),
+                            Integer.parseInt(formM.getTxt_cant().getText()));
+                    this.conexion.escribirArchivo(temp.toString(), Conexion.machineDocName);
+                    ListaG.add(temp);
+                } catch (IOException ex) {
+                    Logger.getLogger(Control.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            DefaultTableModel tabla = (DefaultTableModel) this.formM.getDgw_machine().getModel();
+            String datos[] = {formM.getTxt_cod().getText(),
+                formM.getCmb_tipo().getSelectedItem().toString(),
+                formM.getTxt_cant().getText(),
+                formM.getTxt_desc().getText()};          
+            tabla.addRow(datos);
+            formM.getTxt_cod().setText("");
+            formM.getTxt_cant().setText("");
+            formM.getTxt_desc().setText("");
+        }
+    }
+
+    private void showMachineScreen() {
+        formM.setTitle("Registro Maquinaria");
+        formP.getDpn_escritorio().add(formM);
+        formC.dispose();
+        formA.dispose();
+        DefaultTableModel tabla = (DefaultTableModel) this.formM.getDgw_machine().getModel();
+        tabla.setRowCount(0);
+        ListaG = this.conexion.getGeneralMachineArray();
+        ListaP = this.conexion.getPesadaMachineArray();
+        ListaG.forEach((acum) -> {
+            String datos[] = {acum.getId(), acum.getTipo(), String.valueOf(acum.getCant()), acum.getDesc()};
+            tabla.addRow(datos);
+        });
+        ListaP.forEach((acum) -> {
+            String datos[] = {acum.getId(), acum.getTipo(), String.valueOf(acum.getCant()), acum.getDesc()};
+            tabla.addRow(datos);
+        });
+
+        formM.setVisible(true);
+    }
+
     @Override
-    public void actionPerformed(ActionEvent ae) {
+    public void actionPerformed(ActionEvent ae) {      
         if (formC.getBtn_registrar() == ae.getSource()) {
             registrarCliente();
         }
-
         if (formM.getBtn_registrar() == ae.getSource()) {
-            if (formM.getCmb_tipo().getSelectedIndex() == 0) {
-                objP.setId(formM.getTxt_cod().getText());
-                objP.setTipo(formM.getCmb_tipo().getSelectedItem().toString());
-                objP.setCant(Integer.parseInt(formM.getTxt_cant().getText()));
-                objP.setDesc(formM.getTxt_desc().getText());
-            }
-            if (formM.getCmb_tipo().getSelectedIndex() == 1) {
-                objG.setId(formM.getTxt_cod().getText());
-                objG.setTipo(formM.getCmb_tipo().getSelectedItem().toString());
-                objG.setCant(Integer.parseInt(formM.getTxt_cant().getText()));
-                objG.setDesc(formM.getTxt_desc().getText());
-            }
-            if (formM.getTxt_cant().getText().isEmpty()
-                    || formM.getTxt_cod().getText().isEmpty()
-                    || formM.getTxt_desc().getText().isEmpty()
-                    || formM.getCmb_tipo().getSelectedItem().equals("")) {
-                JOptionPane.showMessageDialog(null, "Se deben ingresar o seleccionar todos los campos, por favor verifique nuevamente");
-            } else {
-                if (formM.getCmb_tipo().getSelectedIndex() == 0) {
-                    ListaP.add(objP);
-                    formM.getTextArea().append(objP.toString() + "\n\n");
-                    objP = new Pesada();
-                } else if (formM.getCmb_tipo().getSelectedIndex() == 1) {
-                    ListaG.add(objG);
-                    formM.getTextArea().append(objG.toString() + "\n\n");
-                    objG = new General();
-                }
-                formM.getTxt_cod().setText("");
-                formM.getTxt_cant().setText("");
-                formM.getTxt_desc().setText("");
-            }
+            registarMaquinaria();
         }
-
         if (formA.getBtn_registrar() == ae.getSource()) {
-            Fecha entrada = new Fecha();
-            Fecha salida = new Fecha();
-            Hora hora = new Hora();
-            entrada.setDd(formA.getjDateChooser1().getCalendar().get(Calendar.DAY_OF_MONTH));
-            entrada.setMm(formA.getjDateChooser1().getCalendar().get(Calendar.MONTH + 1));
-            entrada.setAaaa(formA.getjDateChooser1().getCalendar().get(Calendar.YEAR));
-
-            salida.setDd(formA.getjDateChooser1().getCalendar().get(Calendar.DAY_OF_MONTH + (Integer.parseInt(formA.getTxt_dias().getText()))));
-            salida.setMm(formA.getjDateChooser1().getCalendar().get(Calendar.MONTH + 1));
-            salida.setAaaa(formA.getjDateChooser1().getCalendar().get(Calendar.YEAR));
-
-            hora.setHh(formA.getSpin_hour().getValue());
-            hora.setMm(formA.getSpin_min().getValue());
-            hora.setSs(formA.getSpin_seg().getValue());
-
-            objA = new Alquiler();
-            objA.setNo_recibo(Integer.parseInt(formA.getTxt_no().getText()));
-            objA.setDias(Integer.parseInt(formA.getTxt_dias().getText()));
-            objA.setFecha_e(entrada);
-            objA.setFecha_s(salida);
-            objA.setHora(hora);
-            objA.setCliente(ListaC.get(formA.getCmb_cliente().getSelectedIndex()));
-            objA.setListaM(ListaM);
+            registrarAlquiler();
         }
-
         if (formA.getBtn_agregar() == ae.getSource()) {
-            if (formA.getRdb_general().isSelected()) {
-                ListaM.add(ListaG.get(formA.getCmb_maquinaria().getSelectedIndex()));
-            } else if (formA.getRdb_pesada().isSelected()) {
-                ListaM.add(ListaP.get(formA.getCmb_maquinaria().getSelectedIndex()));
-            }
-
+            addMachine();
         }
-
         if (formP.getMnu_alquiler() == ae.getSource()) {
             formA.setTitle("Registro Alquiler");
             formP.getDpn_escritorio().add(formA);
@@ -214,20 +295,11 @@ public class Control implements ActionListener {
         }
 
         if (formP.getMnu_cliente() == ae.getSource()) {
-            formC.setTitle("Registro Cliente");
-            formP.getDpn_escritorio().add(formC);
-            formC.setVisible(true);
-            formM.dispose();
-            formA.dispose();
+            showClientScreen();
         }
 
         if (formP.getMnu_maquinaria() == ae.getSource()) {
-            formM.setTitle("Registro Maquinaria");
-            formP.getDpn_escritorio().add(formM);
-
-            formC.dispose();
-            formA.dispose();
-            formM.setVisible(true);
+            showMachineScreen();
         }
 
         if (formA.getCmb_cliente() == ae.getSource()) {

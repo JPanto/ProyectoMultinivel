@@ -82,18 +82,24 @@ public class Form_Alquiler extends javax.swing.JInternalFrame {
 
         jMenuItem1.setText("jMenuItem1");
 
+        setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        setClosable(true);
+        setResizable(true);
 
         jLabel1.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Cliente:");
 
         jLabel2.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jLabel2.setText("Maquinaria:");
 
         jLabel3.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Fecha:");
 
         btn_registrar.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        btn_registrar.setForeground(new java.awt.Color(0, 0, 0));
         btn_registrar.setText("Registrar");
         btn_registrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -161,6 +167,8 @@ public class Form_Alquiler extends javax.swing.JInternalFrame {
         btn_agregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/Icons/ico_+.png"))); // NOI18N
 
         group_rdb.add(rdb_pesada);
+        rdb_pesada.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
+        rdb_pesada.setForeground(new java.awt.Color(0, 0, 0));
         rdb_pesada.setText("Pesada");
         rdb_pesada.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -169,6 +177,8 @@ public class Form_Alquiler extends javax.swing.JInternalFrame {
         });
 
         group_rdb.add(rdb_general);
+        rdb_general.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
+        rdb_general.setForeground(new java.awt.Color(0, 0, 0));
         rdb_general.setText("General");
         rdb_general.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -177,11 +187,13 @@ public class Form_Alquiler extends javax.swing.JInternalFrame {
         });
 
         jLabel5.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Días:");
 
         txt_dias.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
 
         jLabel7.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setText("No.");
 
         txt_no.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
@@ -238,7 +250,7 @@ public class Form_Alquiler extends javax.swing.JInternalFrame {
                                     .addComponent(cmb_maquinaria, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btn_agregar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 14, Short.MAX_VALUE))
+                        .addGap(0, 347, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
@@ -394,7 +406,7 @@ public class Form_Alquiler extends javax.swing.JInternalFrame {
                     .addComponent(lb_tip)
                     .addComponent(lb_cant)
                     .addComponent(lb_desc))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 12, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(txt_desc, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -434,7 +446,6 @@ public class Form_Alquiler extends javax.swing.JInternalFrame {
     private void rdb_generalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdb_generalActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_rdb_generalActionPerformed
-
 
     public JButton getBtn_registrar() {
         return btn_registrar;
@@ -507,7 +518,6 @@ public class Form_Alquiler extends javax.swing.JInternalFrame {
     public void setTxt_desc(JTextField txt_desc) {
         this.txt_desc = txt_desc;
     }
-
 
     public JLabel getLB_IDENTIFICACION() {
         return LB_IDENTIFICACION;
@@ -708,18 +718,7 @@ public class Form_Alquiler extends javax.swing.JInternalFrame {
     public void setLb_total(JLabel lb_total) {
         this.lb_total = lb_total;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel LB_CANTIDAD;

@@ -1,0 +1,7 @@
+201578;Pesada;pesada1;1
+123546;General;gen1;3
+132456;Pesada;Hola;3
+123456;Pesada;Pesada 1;12
+21351;General;gen 23;1
+456789;Pesada;Pesada 123;12
+123456;General;Hola mundo;1234

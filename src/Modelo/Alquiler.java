@@ -175,7 +175,7 @@ public class Alquiler {
 
     @Override
     public String toString() {
-        return "Alquiler{" + "no_recibo=" + no_recibo + ", dias=" + dias + ", fecha_e=" + fecha_e + ", fecha_s=" + fecha_s + ", hora=" + hora + ", cliente=" + cliente + ", ListaM=" + ListaM + '}';
+        return no_recibo + ";" + dias + ";" + fecha_e + ";" + fecha_s + ";" + hora + ";" + cliente + ";" + ListaM;
     }
 
     /**

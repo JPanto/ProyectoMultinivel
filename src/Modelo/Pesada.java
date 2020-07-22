@@ -48,7 +48,7 @@ public class Pesada extends Maquinaria{
 
     @Override
     public String toString() {
-        return "Maquinaria ->" + getId() + "\ntipo=" + getTipo() + "\ndesc=" + getDesc() + "\ncant=" + getCant();
+        return getId() + ";" + getTipo() + ";" + getDesc() + ";" + getCant();
     }
     
     

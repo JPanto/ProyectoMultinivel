@@ -123,7 +123,7 @@ public abstract class Maquinaria {
      */
     @Override
     public String toString() {
-        return "Maquinaria ->" + id + "\ntipo=" + tipo + "\ndesc=" + desc + "\ncant=" + cant;
+        return id + ";" + tipo + ";" + desc + ";" + cant;
     }
     
     
