@@ -6,8 +6,11 @@ import Modelo.*;
 import Vista.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -22,14 +25,14 @@ public class Control implements ActionListener {
     Recaudo objR;
     Persona objC;
     Alquiler objA;
-    
+
     Conexion conexion = new Conexion();
-    
+
     ArrayList<General> ListaG;
     ArrayList<Pesada> ListaP;
     ArrayList<Persona> ListaC;
     ArrayList<Maquinaria> ListaM;
-    
+
     Form_Principal formP;
     Form_Cliente formC;
     Form_Maquinaria formM;
@@ -72,9 +75,9 @@ public class Control implements ActionListener {
         this.formA.getBtn_agregar().addActionListener(this);
         this.formA.getBtn_registrar().addActionListener(this);
     }
-    
-    private void initPrincipalFrame(){
-         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+    private void initPrincipalFrame() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.formP.setSize(screenSize.width, screenSize.height);
     }
 
@@ -86,32 +89,40 @@ public class Control implements ActionListener {
     /**
      * Se registra el cliente
      */
-    private void registrarCliente(){
+    private void registrarCliente() {
+        String clientDocName = "Cliente";
         objC.setId(formC.getTxt_id().getText());
-            objC.setNom(formC.getTxt_nom().getText());
-            objC.setTel(formC.getTxt_tel().getText());
-            if (formC.getTxt_id().getText().isEmpty()
-                    || formC.getTxt_nom().getText().isEmpty()
-                    || formC.getTxt_tel().getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null,
-                        "Se debe ingresar numero de Identificacion, Nombre y telefono por favor verifique nuevamente");
-       
-            } else {
-                ListaC.add(objC);
-                formC.getTextArea().append(objC.toString()+"\n\n");
-                objC = new Persona();
-                formC.getTxt_id().setText("");
-                formC.getTxt_nom().setText("");
-                formC.getTxt_tel().setText("");
+        objC.setNom(formC.getTxt_nom().getText());
+        objC.setTel(formC.getTxt_tel().getText());
+        if (formC.getTxt_id().getText().isEmpty()
+                || formC.getTxt_nom().getText().isEmpty()
+                || formC.getTxt_tel().getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "Se debe ingresar numero de Identificacion, Nombre y telefono por favor verifique nuevamente");
+        } else {
+            try {
+                this.conexion.escribirArchivo(this.objC.toString(), clientDocName);
+            } catch (IOException ex) {
+                Logger.getLogger(Control.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.print(" *** Error al Conectar *** " + ex.toString());
+            } catch (Exception e) {
+                System.out.print(" *** Error al Ingresar *** " + e.toString());
             }
+            ListaC.add(objC);
+            formC.getTextArea().append(objC.toString() + "\n\n");
+            objC = new Persona();
+            formC.getTxt_id().setText("");
+            formC.getTxt_nom().setText("");
+            formC.getTxt_tel().setText("");
+        }
     }
-    
+
     @Override
-    public void actionPerformed(ActionEvent ae) { 
+    public void actionPerformed(ActionEvent ae) {
         if (formC.getBtn_registrar() == ae.getSource()) {
             registrarCliente();
         }
-       
+
         if (formM.getBtn_registrar() == ae.getSource()) {
             if (formM.getCmb_tipo().getSelectedIndex() == 0) {
                 objP.setId(formM.getTxt_cod().getText());
@@ -125,21 +136,19 @@ public class Control implements ActionListener {
                 objG.setCant(Integer.parseInt(formM.getTxt_cant().getText()));
                 objG.setDesc(formM.getTxt_desc().getText());
             }
-            if (formM.getTxt_cant().getText().isEmpty()||
-                    formM.getTxt_cod().getText().isEmpty()||
-                    formM.getTxt_desc().getText().isEmpty()||
-                    formM.getCmb_tipo().getSelectedItem().equals("")){
+            if (formM.getTxt_cant().getText().isEmpty()
+                    || formM.getTxt_cod().getText().isEmpty()
+                    || formM.getTxt_desc().getText().isEmpty()
+                    || formM.getCmb_tipo().getSelectedItem().equals("")) {
                 JOptionPane.showMessageDialog(null, "Se deben ingresar o seleccionar todos los campos, por favor verifique nuevamente");
-            }
-            else{
-                if(formM.getCmb_tipo().getSelectedIndex() == 0){
+            } else {
+                if (formM.getCmb_tipo().getSelectedIndex() == 0) {
                     ListaP.add(objP);
-                    formM.getTextArea().append(objP.toString()+"\n\n");
+                    formM.getTextArea().append(objP.toString() + "\n\n");
                     objP = new Pesada();
-                }
-                else if(formM.getCmb_tipo().getSelectedIndex() == 1){
+                } else if (formM.getCmb_tipo().getSelectedIndex() == 1) {
                     ListaG.add(objG);
-                    formM.getTextArea().append(objG.toString()+"\n\n");
+                    formM.getTextArea().append(objG.toString() + "\n\n");
                     objG = new General();
                 }
                 formM.getTxt_cod().setText("");
@@ -147,24 +156,24 @@ public class Control implements ActionListener {
                 formM.getTxt_desc().setText("");
             }
         }
-        
-        if (formA.getBtn_registrar()==ae.getSource()){
+
+        if (formA.getBtn_registrar() == ae.getSource()) {
             Fecha entrada = new Fecha();
             Fecha salida = new Fecha();
             Hora hora = new Hora();
             entrada.setDd(formA.getjDateChooser1().getCalendar().get(Calendar.DAY_OF_MONTH));
-            entrada.setMm(formA.getjDateChooser1().getCalendar().get(Calendar.MONTH+1));
+            entrada.setMm(formA.getjDateChooser1().getCalendar().get(Calendar.MONTH + 1));
             entrada.setAaaa(formA.getjDateChooser1().getCalendar().get(Calendar.YEAR));
-            
-            salida.setDd(formA.getjDateChooser1().getCalendar().get(Calendar.DAY_OF_MONTH+(Integer.parseInt(formA.getTxt_dias().getText()))));
-            salida.setMm(formA.getjDateChooser1().getCalendar().get(Calendar.MONTH+1));
+
+            salida.setDd(formA.getjDateChooser1().getCalendar().get(Calendar.DAY_OF_MONTH + (Integer.parseInt(formA.getTxt_dias().getText()))));
+            salida.setMm(formA.getjDateChooser1().getCalendar().get(Calendar.MONTH + 1));
             salida.setAaaa(formA.getjDateChooser1().getCalendar().get(Calendar.YEAR));
-            
+
             hora.setHh(formA.getSpin_hour().getValue());
             hora.setMm(formA.getSpin_min().getValue());
             hora.setSs(formA.getSpin_seg().getValue());
-            
-            objA= new Alquiler();
+
+            objA = new Alquiler();
             objA.setNo_recibo(Integer.parseInt(formA.getTxt_no().getText()));
             objA.setDias(Integer.parseInt(formA.getTxt_dias().getText()));
             objA.setFecha_e(entrada);
@@ -173,39 +182,37 @@ public class Control implements ActionListener {
             objA.setCliente(ListaC.get(formA.getCmb_cliente().getSelectedIndex()));
             objA.setListaM(ListaM);
         }
-        
-        if (formA.getBtn_agregar()==ae.getSource()){
-            if(formA.getRdb_general().isSelected()){
+
+        if (formA.getBtn_agregar() == ae.getSource()) {
+            if (formA.getRdb_general().isSelected()) {
                 ListaM.add(ListaG.get(formA.getCmb_maquinaria().getSelectedIndex()));
-            }
-            else if(formA.getRdb_pesada().isSelected()){
+            } else if (formA.getRdb_pesada().isSelected()) {
                 ListaM.add(ListaP.get(formA.getCmb_maquinaria().getSelectedIndex()));
             }
-            
+
         }
 
         if (formP.getMnu_alquiler() == ae.getSource()) {
             formA.setTitle("Registro Alquiler");
             formP.getDpn_escritorio().add(formA);
             formA.setVisible(true);
-             formC.dispose();
-             formM.dispose();
+            formC.dispose();
+            formM.dispose();
             for (int i = 0; i < ListaC.size(); i++) {
                 formA.getCmb_cliente().addItem(ListaC.get(i).getId());
             }
-            if(formA.getRdb_general().isSelected()){
+            if (formA.getRdb_general().isSelected()) {
                 for (int i = 0; i < ListaG.size(); i++) {
                     formA.getCmb_maquinaria().addItem(ListaG.get(i).getId());
                 }
-            }
-            else if(formA.getRdb_pesada().isSelected()){
+            } else if (formA.getRdb_pesada().isSelected()) {
                 for (int i = 0; i < ListaP.size(); i++) {
                     formA.getCmb_maquinaria().addItem(ListaP.get(i).getId());
                 }
             }
             //iniciarAlquiler();
         }
-        
+
         if (formP.getMnu_cliente() == ae.getSource()) {
             formC.setTitle("Registro Cliente");
             formP.getDpn_escritorio().add(formC);
@@ -213,11 +220,11 @@ public class Control implements ActionListener {
             formM.dispose();
             formA.dispose();
         }
-        
+
         if (formP.getMnu_maquinaria() == ae.getSource()) {
             formM.setTitle("Registro Maquinaria");
             formP.getDpn_escritorio().add(formM);
-           
+
             formC.dispose();
             formA.dispose();
             formM.setVisible(true);
@@ -236,8 +243,8 @@ public class Control implements ActionListener {
             formA.getLb_id().setText(ListaC.get(formA.getCmb_cliente().getSelectedIndex()).getId());
             formA.getLb_tel().setText(ListaC.get(formA.getCmb_cliente().getSelectedIndex()).getTel());
         }
-        
-        if (formA.getCmb_maquinaria() == ae.getSource()){
+
+        if (formA.getCmb_maquinaria() == ae.getSource()) {
 
             formA.getLB_TIPO().setVisible(true);
             formA.getLB_CANTIDAD().setVisible(true);
@@ -245,33 +252,31 @@ public class Control implements ActionListener {
             formA.getLb_cant().setVisible(true);
             formA.getLb_tip().setVisible(true);
             formA.getLb_cant().setVisible(true);
-            
-            if(formA.getRdb_general().isSelected()){
+
+            if (formA.getRdb_general().isSelected()) {
                 Maquinaria temp = ListaG.get(formA.getCmb_maquinaria().getSelectedIndex());
                 formA.getLb_tip().setText(temp.getTipo());
                 formA.getLb_cant().setText(Integer.toString(ListaG.get(formA.getCmb_maquinaria().getSelectedIndex()).getCant()));
                 formA.getLb_desc().setText(ListaG.get(formA.getCmb_maquinaria().getSelectedIndex()).getDesc());
-            }
-            
-            else if(formA.getRdb_pesada().isSelected()){
+            } else if (formA.getRdb_pesada().isSelected()) {
                 formA.getLb_tip().setText(ListaP.get(formA.getCmb_maquinaria().getSelectedIndex()).getTipo());
                 formA.getLb_cant().setText(Integer.toString(ListaP.get(formA.getCmb_maquinaria().getSelectedIndex()).getCant()));
                 formA.getLb_desc().setText(ListaP.get(formA.getCmb_maquinaria().getSelectedIndex()).getDesc());
             }
         }
-        
-        if(formA.getRdb_general()==ae.getSource()){
-                formA.getCmb_maquinaria().removeAllItems();
-                for (int i = 0; i < ListaG.size(); i++) {
+
+        if (formA.getRdb_general() == ae.getSource()) {
+            formA.getCmb_maquinaria().removeAllItems();
+            for (int i = 0; i < ListaG.size(); i++) {
                 formA.getCmb_maquinaria().addItem(ListaG.get(i).getId());
-                }
+            }
         }
-        
-        if(formA.getRdb_pesada()==ae.getSource()){
-                formA.getCmb_maquinaria().removeAllItems();
-                for (int i = 0; i < ListaP.size(); i++) {
+
+        if (formA.getRdb_pesada() == ae.getSource()) {
+            formA.getCmb_maquinaria().removeAllItems();
+            for (int i = 0; i < ListaP.size(); i++) {
                 formA.getCmb_maquinaria().addItem(ListaP.get(i).getId());
-                }
+            }
         }
 
         if (formP.getMnu_salir() == ae.getSource()) {
@@ -286,8 +291,8 @@ public class Control implements ActionListener {
         ventana.setLocationRelativeTo(null);
         ventana.setVisible(true);
     }
-    
-    public void iniciarAlquiler(){
+
+    public void iniciarAlquiler() {
         formA.getLB_CANTIDAD().setVisible(false);
         formA.getLB_DESCRIPCION().setVisible(false);
         formA.getLB_IDENTIFICACION().setVisible(false);
