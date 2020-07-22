@@ -84,7 +84,7 @@ public class Persona {
      */
     @Override
     public String toString() {
-        return "Persona ->" + id + "\nnombre=" + nom + "\ntelefono=" + tel;
+        return id + ";" + nom + ";" + tel;
     }
         
 }
