@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -189,7 +190,6 @@ public class Control implements ActionListener {
             } else if (formA.getRdb_pesada().isSelected()) {
                 ListaM.add(ListaP.get(formA.getCmb_maquinaria().getSelectedIndex()));
             }
-
         }
 
         if (formP.getMnu_alquiler() == ae.getSource()) {
@@ -228,6 +228,26 @@ public class Control implements ActionListener {
             formC.dispose();
             formA.dispose();
             formM.setVisible(true);
+        }
+        
+        if(formP.getMnu_recaudo()==ae.getSource()){
+            String alquiler[]=null;
+            String alquilerDocName="Alquiler";
+            try {
+                alquiler=this.conexion.leerArchivo(alquilerDocName).split("\n");
+            } catch (IOException ex) {
+                Logger.getLogger(Control.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.print(" *** Error al Conectar *** " + ex.toString());
+            } catch (Exception e) {
+                System.out.print(" *** Error al Ingresar *** " + e.toString());
+            }
+            DefaultTableModel plantilla = (DefaultTableModel) formR.getDgw_datos().getModel();
+            plantilla.addRow(alquiler);
+            
+        }
+        
+        if (formR.getBtn_salir()==ae.getSource()){
+            formR.dispose();
         }
 
         if (formA.getCmb_cliente() == ae.getSource()) {
